@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guess the Note Game</title>
+<style>
+    body {
+        font-family: 'Alike', sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .Title{ 
+        font-size: 10px;
+        color: black;
+        position: absolute;
+        top: 15px;
+        left: 100px;
+    }
+
+    .Logo {
+        position: absolute;
+        top: 15px;
+        left: 20px;
+    }
+
+    nav {
+            background-color: #6F5643;
+            overflow: hidden;
+        }
+
+    nav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+    nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+    .active {
+            background-color: #EADAC7;
+            color: black;
+        }
+
+
+    #container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+    h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+    button {
+        padding: 10px 20px;
+        border: none;
+        width: 100px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #6F5643;
+        color: white;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+
+    .dropdown {
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #6F5643;
+        color: white;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+    button:hover, .dropdown:hover {
+        background-color: #ddd;
+        color: black;
+    }
+    #detector {
+        margin-top: 20px;
+    }
+    .pitch {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    .note {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    #output {
+        margin-bottom: 20px;
+    }
+    #detune {
+        font-size: 16px;
+        color: #666;
+    }
+    #flat, #sharp {
+        color: #FF0000;
+    }
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+    .dropdown-content a:hover {
+        background-color: #f1f1f1;
+    }
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+</style>
+<link href='http://fonts.googleapis.com/css?family=Alike' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<div class="Title">
+    <h1>Pitch Perfect</h1>
+    <h3 style="margin-top: -25px;">Tune In, Tune Out</h3>
+</div>
+<div class="Logo">
+    <img style="width: 70px; height: 70px" src="Logo.png">
+</div>
+<div id="container">
+    <nav>
+        <a href="Home.html">Chromatic Tuner</a>
+        <a href="Guitar.html">Guitar Tuner</a>
+        <a href="AudioRecordDownload.html" target="_blank">Audio Recorder</a>
+        <a href="Game.html" class="active">Practice Pitch</a>
+    </nav>
+    <h1>Guess the Note Game</h1>
+    <h4 style="margin-top: -15px;">Play Audio to Start</h4>
+    <div id="audio-container">
+        <audio controls id="audio-element"></audio><br><br>
+    </div>
+    <div id="guess-buttons">
+        <button class="guess-button" onclick="checkGuess('G')">G</button>
+        <button class="guess-button" onclick="checkGuess('Gsharp')">G#</button>
+        <button class="guess-button" onclick="checkGuess('A')">A</button>
+        <button class="guess-button" onclick="checkGuess('Asharp')">A#</button><br>
+        <button class="guess-button" onclick="checkGuess('B')">B</button>
+        <button class="guess-button" onclick="checkGuess('C')">C</button>
+        <button class="guess-button" onclick="checkGuess('Csharp')">C#</button>
+        <button class="guess-button" onclick="checkGuess('D')">D</button><br>
+        <button class="guess-button" onclick="checkGuess('Dsharp')">D#</button>
+        <button class="guess-button" onclick="checkGuess('E')">E</button>
+        <button class="guess-button" onclick="checkGuess('F')">F</button>
+        <button class="guess-button" onclick="checkGuess('Fsharp')">F#</button>
+    </div>
+    <div id="result"></div>
+    <div id="correctAnswer"></div>
+</div>
+
+<script>
+var audioFiles = [
+    { name: 'G', src: 'G.mp3' },
+    { name: 'Gsharp', src: 'Gsharp.mp3' },
+    { name: 'A', src: 'A.mp3' },
+    { name: 'Asharp', src: 'Asharp.mp3' },
+    { name: 'B', src: 'B.mp3' },
+    { name: 'C', src: 'C.mp3' },
+    { name: 'Csharp', src: 'Csharp.mp3' },
+    { name: 'D', src: 'D.mp3' },
+    { name: 'Dsharp', src: 'Dsharp.mp3' },
+    { name: 'E', src: 'E.mp3' },
+    { name: 'F', src: 'F.mp3' },
+    { name: 'Fsharp', src: 'Fsharp.mp3' }
+    // Add more audio file names and their corresponding sound names here
+];
+
+var currentAudio;
+
+function playRandomAudio() {
+    var randomIndex = Math.floor(Math.random() * audioFiles.length);
+    currentAudio = audioFiles[randomIndex];
+
+    var audioElement = document.getElementById('audio-element');
+    audioElement.src = currentAudio.src;
+
+    audioElement.play();
+
+    // Clear previous correct answer message
+    var correctAnswerDiv = document.getElementById('correctAnswer');
+    correctAnswerDiv.textContent = '';
+}
+
+function checkGuess(guess) {
+    var resultDiv = document.getElementById('result');
+    var correctAnswerDiv = document.getElementById('correctAnswer');
+
+    if (guess === currentAudio.name) {
+        resultDiv.textContent = 'Correct!';
+        resultDiv.style.color = 'green';
+        setTimeout(function() {
+            resultDiv.textContent = '';
+            resultDiv.style.color = '';
+            playRandomAudio(); // Play another random audio for the next round
+        }, 1000); // Wait 1 second before playing the next audio
+    } else {
+        resultDiv.textContent = 'Incorrect. Try again!';
+        resultDiv.style.color = 'red';
+        correctAnswerDiv.textContent = 'The correct answer was: ' + currentAudio.name;
+        setTimeout(function() {
+            resultDiv.textContent = '';
+            resultDiv.style.color = '';
+            playRandomAudio(); // Play another random audio for the next round
+        }, 1000); // Wait 1 second before playing the next audio
+    }
+}
+
+// Initialize the game
+playRandomAudio();
+</script>
+</body>
+</html>
